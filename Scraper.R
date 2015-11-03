@@ -55,7 +55,7 @@ for (page in 1:(length(databasePageURLs))) {
         cat(paste0(" project ", projInfo$projectNr, " done. \n"))
     }
     # Safety measure: Store list after finishing a page
-    # save(projectList, file = "projectList_backup.RData")
+    save(projectList, file = "projectList_backup.RData")
 }
 
 result <- lapply(projectList, unlist)
@@ -130,20 +130,3 @@ write.table(resultMerged, file = "IFC_merged.csv", row.names = F)
 resultMerged_sample <- draw(resultMerged, n = 100)
 write.table(resultMerged_sample, file = "IFC_merged_sample.csv", row.names = F, sep = ";")
 
-
-# Alles wichtige aus tab 2
-# //tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'dataCell', ' ' ))] | //tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'labelCell', ' ' ))] | //*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'sectionContentCell', ' ' ))]//td//tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'dataCell', ' ' ))] | //tr[(((count(preceding-sibling::*) + 1) = 4) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'labelCell', ' ' ))] | //tr[(((count(preceding-sibling::*) + 1) = 2) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'dataCell', ' ' ))] | //tr[(((count(preceding-sibling::*) + 1) = 2) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'labelCell', ' ' ))] | //*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'sectionContentCell', ' ' ))]//td//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'subHeading', ' ' )) and (((count(preceding-sibling::*) + 1) = 1) and parent::*)] | //tr[(((count(preceding-sibling::*) + 1) = 5) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'subHeading', ' ' ))] | //tr[(((count(preceding-sibling::*) + 1) = 6) and parent::*)]//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'dataCell', ' ' ))]
-
-# projectHTML %>%
-#     html_nodes(xpath = "//*[(@id = 'divtab2')]//td") %>%
-#     html_text()
-#
-# projectHTML %>%
-#     html_nodes(xpath = "//*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'dataCell', ' ' ))]") %>%
-#     html_text() %>%
-#     head(n = 1) %>%
-#     str_trim()
-#
-#
-# # Das hier findet irgendwie auch die Tabelle
-# //*[contains(concat( ' ', @class, ' ' ), concat( ' ', 'sectionContentCell', ' ' ))]//td
