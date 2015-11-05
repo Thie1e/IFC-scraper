@@ -3,10 +3,6 @@ library(stringr)
 library(XML)
 library(countrycode)
 
-setwd("/home/khl4v/Seafile/Crypt2/R/InternationalFinanceCorp_Scraper/")
-setwd("E:\\Seafile\\Crypt2\\R\\InternationalFinanceCorp_Scraper\\")
-
-
 # Generate database pages --------------------------------------------------
 source("functions.R")
 source("keepTrying.R")
@@ -58,37 +54,37 @@ for (page in 1:(length(databasePageURLs))) {
     save(projectList, file = "projectList_backup.RData")
 }
 
-result <- lapply(projectList, unlist)
-result <- do.call(rbind, result) # We don't want warnings here!
-result <- data.frame(result, stringsAsFactors = F)
-result$projectNr <- as.numeric(result$projectNr) # Coerces 'Not found' to NA
-result$projectNr[is.na(result$projectNr)] <- "error"
-result <- result[order(result$projectNr, decreasing = F), ]
-View(result)
-write.table(result, file = "IFC.csv", row.names = F)
-save(result, file = "result.RData")
+IFCprojects <- lapply(projectList, unlist)
+IFCprojects <- do.call(rbind, IFCprojects) # We don't want warnings here!
+IFCprojects <- data.frame(IFCprojects, stringsAsFactors = F)
+IFCprojects$projectNr <- as.numeric(IFCprojects$projectNr) # Coerces 'Not found' to NA
+IFCprojects$projectNr[is.na(IFCprojects$projectNr)] <- "error"
+IFCprojects <- IFCprojects[order(IFCprojects$projectNr, decreasing = F), ]
+View(IFCprojects)
+write.table(IFCprojects, file = "IFC.csv", row.names = F)
+save(IFCprojects, file = "IFCprojects.RData")
 
 # Merge by project Nr
-resultMerged <- result
+IFCprojectsMerged <- IFCprojects
 NA_strings <- c("Not found", "No cost tab", "'Approved' not among previous events",
                 "'Signed' not among previous events", " ")
-resultMerged <- apply(resultMerged, 2, function(x) {
+IFCprojectsMerged <- apply(IFCprojectsMerged, 2, function(x) {
     temp <- x
     temp[temp %in% NA_strings] <- NA
     temp <- str_trim(temp)
     return(temp)
 })
-resultMerged <- data.frame(resultMerged, stringsAsFactors = F)
-resultMerged$projectNr <- as.numeric(resultMerged$projectNr)
-resultMerged$projectNr[is.na(resultMerged$projectNr)] <- "error"
+IFCprojectsMerged <- data.frame(IFCprojectsMerged, stringsAsFactors = F)
+IFCprojectsMerged$projectNr <- as.numeric(IFCprojectsMerged$projectNr)
+IFCprojectsMerged$projectNr[is.na(IFCprojectsMerged$projectNr)] <- "error"
 # Put both URLs (if possible) into URL column
-UrlPerProject <- sapply(resultMerged$projectNr,
-                        function(x) resultMerged[resultMerged$projectNr == x, "URL"])
+UrlPerProject <- sapply(IFCprojectsMerged$projectNr,
+                        function(x) IFCprojectsMerged[IFCprojectsMerged$projectNr == x, "URL"])
 UrlPerProject <- sapply(UrlPerProject, function(x) paste(sort(x), collapse = " "))
 UrlPerProject <- data.frame(projectNr = as.character(names(UrlPerProject)),
                             URL = UrlPerProject, stringsAsFactors = F)
-resultMerged$URL <- NULL
-resultMerged$URL <- sapply(resultMerged$projectNr, function(x) {
+IFCprojectsMerged$URL <- NULL
+IFCprojectsMerged$URL <- sapply(IFCprojectsMerged$projectNr, function(x) {
     insert <- UrlPerProject[UrlPerProject$projectNr == x, "URL"]
     insert <- sort(unique(insert))
     insert <- paste(insert, collapse = " ")
@@ -96,11 +92,11 @@ resultMerged$URL <- sapply(resultMerged$projectNr, function(x) {
 })
 
 # Check if there are no conflicting values for a project
-projectNumbers <- unique(resultMerged$projectNr)
+projectNumbers <- unique(IFCprojectsMerged$projectNr)
 projectNumbers <- projectNumbers[projectNumbers != "error"]
 projWithConflicts <- c()
 for (i in seq_along(projectNumbers)) {
-    tempdat <- resultMerged[resultMerged$projectNr == projectNumbers[i], ]
+    tempdat <- IFCprojectsMerged[IFCprojectsMerged$projectNr == projectNumbers[i], ]
     if (nrow(tempdat) > 1) {
         if (nrow(tempdat) > 2) {
             print(paste("Project", projectNumbers[i], "has more than 2 pages"))
@@ -121,12 +117,9 @@ for (i in seq_along(projectNumbers)) {
 projWithConflicts <- as.numeric(projWithConflicts)
 # These have to be checked manually in Excel, some text fields are differing
 
-resultMerged <- aggregate(x = resultMerged,
-          by = list(resultMerged$projectNr),
+IFCprojectsMerged <- aggregate(x = IFCprojectsMerged,
+          by = list(IFCprojectsMerged$projectNr),
           FUN = function(x) na.omit(x)[1])[,-1]
 
-write.table(resultMerged, file = "IFC_merged.csv", row.names = F)
-
-resultMerged_sample <- draw(resultMerged, n = 100)
-write.table(resultMerged_sample, file = "IFC_merged_sample.csv", row.names = F, sep = ";")
-
+save(IFCprojectsMerged, file = "IFCprojectsMerged.RData")
+write.table(IFCprojectsMerged, file = "IFC_merged.csv", row.names = F)

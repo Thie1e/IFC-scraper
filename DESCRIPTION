@@ -1,0 +1,14 @@
+Package: IFCscraper
+Title: Scraping The IFC's Project Database
+Version: 0.1
+Authors@R: person("Christian", "Thiele", email = "contme109@gmail.com",
+                  role = c("aut", "cre"))
+Description: Some functions for scraping the IFC's database.
+Depends: R (>= 3.1.0)
+License: MIT
+LazyData: true
+Imports:
+    rvest,
+    countrycode,
+	stringr,
+	XML
