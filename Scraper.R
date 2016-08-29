@@ -4,8 +4,6 @@ library(XML)
 library(countrycode)
 
 # Generate database pages --------------------------------------------------
-source("functions.R")
-source("keepTrying.R")
 # Look up manually at
 # http://ifcextapps.ifc.org/ifcext/spiwebsite1.nsf/frmShowView?openform&view=CRUDate&start=1&count=100&page=1
 pages <- 68
